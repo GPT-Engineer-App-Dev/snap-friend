@@ -1,8 +1,9 @@
-import { Box, Button, Input, Textarea, VStack } from "@chakra-ui/react";
+import { Box, Button, Input, Textarea, VStack, useToast, Image } from "@chakra-ui/react";
 import { useState } from "react";
 
 const Upload = () => {
   const [photo, setPhoto] = useState(null);
+  const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [description, setDescription] = useState("");
 
   const handlePhotoChange = (e) => {
@@ -13,9 +14,32 @@ const Upload = () => {
     setDescription(e.target.value);
   };
 
+  const toast = useToast();
+
   const handleSubmit = () => {
-    // Handle photo upload logic here
-    console.log("Photo uploaded:", photo, description);
+    if (photo && description) {
+      const newPhoto = { id: Date.now(), url: photo, description };
+      const updatedPhotos = [...uploadedPhotos, newPhoto];
+      setUploadedPhotos(updatedPhotos);
+      localStorage.setItem("userPhotos", JSON.stringify(updatedPhotos));
+      setPhoto(null);
+      setDescription("");
+      toast({
+        title: "Photo uploaded.",
+        description: "Your photo has been uploaded successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Error.",
+        description: "Please select a photo and enter a description.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -27,6 +51,16 @@ const Upload = () => {
           Upload
         </Button>
       </VStack>
+      <Box mt={8}>
+        {uploadedPhotos.map((photo) => (
+          <Box key={photo.id} borderWidth="1px" borderRadius="lg" overflow="hidden" mb={4}>
+            <Image src={photo.url} alt={photo.description} />
+            <Box p={4}>
+              <Text>{photo.description}</Text>
+            </Box>
+          </Box>
+        ))}
+      </Box>
     </Box>
   );
 };
