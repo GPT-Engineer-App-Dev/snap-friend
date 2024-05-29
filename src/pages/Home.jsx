@@ -1,11 +1,13 @@
 import { Box, SimpleGrid, Image, Text } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 
 const Home = () => {
-  const photos = [
-    { id: 1, url: "https://via.placeholder.com/300", description: "Photo 1" },
-    { id: 2, url: "https://via.placeholder.com/300", description: "Photo 2" },
-    { id: 3, url: "https://via.placeholder.com/300", description: "Photo 3" },
-  ];
+  const [photos, setPhotos] = useState([]);
+
+  useEffect(() => {
+    const photos = JSON.parse(localStorage.getItem("userPhotos")) || [];
+    setPhotos(photos);
+  }, []);
 
   return (
     <Box p={4}>
